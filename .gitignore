@@ -39,3 +39,6 @@ Thumbs.db
 
 # Logs
 *.log
+google-services.json
+firebase-service-account.json
+serviceAccountKey.json

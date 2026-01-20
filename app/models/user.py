@@ -19,6 +19,10 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # FCM Push Notification fields
+    fcm_token = db.Column(db.String(500), nullable=True)
+    fcm_platform = db.Column(db.String(20), nullable=True)  # 'ios' or 'android'
+
     # Relationships
     created_users = db.relationship('User', backref=db.backref('creator', remote_side=[id]))
     cases_created = db.relationship('Case', backref='creator', foreign_keys='Case.created_by')

@@ -2,9 +2,53 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from ..extensions import db
 from ..models.notification import Notification
+from ..models.user import User
 from ..utils.decorators import get_current_user
 
 bp = Blueprint('notifications', __name__, url_prefix='/api/notifications')
+
+
+@bp.route('/fcm-token', methods=['POST'])
+@jwt_required()
+def register_fcm_token():
+    """Register or update FCM token for push notifications"""
+    current_user = get_current_user()
+
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+
+    fcm_token = data.get('fcm_token')
+    platform = data.get('platform', 'android')
+
+    if not fcm_token:
+        return jsonify({'error': 'FCM token is required'}), 400
+
+    if platform not in ['ios', 'android']:
+        platform = 'android'
+
+    # Update user's FCM token
+    current_user.fcm_token = fcm_token
+    current_user.fcm_platform = platform
+    db.session.commit()
+
+    return jsonify({
+        'message': 'FCM token registered successfully',
+        'platform': platform
+    }), 200
+
+
+@bp.route('/fcm-token', methods=['DELETE'])
+@jwt_required()
+def remove_fcm_token():
+    """Remove FCM token (on logout)"""
+    current_user = get_current_user()
+
+    current_user.fcm_token = None
+    current_user.fcm_platform = None
+    db.session.commit()
+
+    return jsonify({'message': 'FCM token removed successfully'}), 200
 
 
 @bp.route('', methods=['GET'])

@@ -2,10 +2,12 @@ from ..extensions import db
 from ..models.notification import Notification
 from ..models.user import User
 from ..utils.constants import UserRole
+from .fcm_service import send_push_to_user
 
 
 def create_notification(user_id, title, message, case_id=None):
-    """Create a notification for a user"""
+    """Create a notification for a user and send push notification"""
+    # Save to database
     notification = Notification(
         user_id=user_id,
         title=title,
@@ -14,6 +16,18 @@ def create_notification(user_id, title, message, case_id=None):
     )
     db.session.add(notification)
     db.session.commit()
+
+    # Send push notification
+    try:
+        user = User.query.get(user_id)
+        if user and user.fcm_token:
+            data = {'notification_id': str(notification.id)}
+            if case_id:
+                data['case_id'] = str(case_id)
+            send_push_to_user(user, title, message, data)
+    except Exception as e:
+        print(f"Error sending push notification: {e}")
+
     return notification
 
 
