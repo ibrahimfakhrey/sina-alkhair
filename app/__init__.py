@@ -44,20 +44,34 @@ def create_app(config_class=Config):
     # Create database tables
     with app.app_context():
         db.create_all()
-        # Create default owner account if not exists
+        # Create default accounts if not exists
         from .models.user import User
         from .utils.constants import UserRole
-        owner = User.query.filter_by(role=UserRole.OWNER).first()
-        if not owner:
-            owner = User(
-                username='owner',
-                email='owner@charity.org',
-                full_name='System Owner',
-                phone='0000000000',
-                role=UserRole.OWNER
-            )
-            owner.set_password('owner123')
-            db.session.add(owner)
-            db.session.commit()
+
+        # Default accounts to create
+        default_accounts = [
+            {'username': 'owner', 'email': 'owner@charity.org', 'full_name': 'System Owner', 'phone': '0000000000', 'role': UserRole.OWNER, 'password': 'owner123'},
+            {'username': 'manager1', 'email': 'manager1@charity.org', 'full_name': 'Manager Cases', 'phone': '0000000001', 'role': UserRole.MANAGER_1, 'password': 'manager123'},
+            {'username': 'manager2', 'email': 'manager2@charity.org', 'full_name': 'Manager Approvals', 'phone': '0000000002', 'role': UserRole.MANAGER_2, 'password': 'manager123'},
+            {'username': 'manager3', 'email': 'manager3@charity.org', 'full_name': 'Manager Finance', 'phone': '0000000003', 'role': UserRole.MANAGER_3, 'password': 'manager123'},
+            {'username': 'manager4', 'email': 'manager4@charity.org', 'full_name': 'Manager Reports', 'phone': '0000000004', 'role': UserRole.MANAGER_4, 'password': 'manager123'},
+            {'username': 'manager5', 'email': 'manager5@charity.org', 'full_name': 'Manager Admin', 'phone': '0000000005', 'role': UserRole.MANAGER_5, 'password': 'manager123'},
+            {'username': 'researcher1', 'email': 'researcher1@charity.org', 'full_name': 'Researcher One', 'phone': '0000000006', 'role': UserRole.RESEARCHER, 'password': 'researcher123'},
+        ]
+
+        for account in default_accounts:
+            existing = User.query.filter_by(username=account['username']).first()
+            if not existing:
+                user = User(
+                    username=account['username'],
+                    email=account['email'],
+                    full_name=account['full_name'],
+                    phone=account['phone'],
+                    role=account['role']
+                )
+                user.set_password(account['password'])
+                db.session.add(user)
+
+        db.session.commit()
 
     return app

@@ -12,8 +12,13 @@ def serve_upload(filename):
 
 if __name__ == '__main__':
     import socket
-    hostname = socket.gethostname()
-    local_ip = socket.gethostbyname(hostname)
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+    except:
+        local_ip = "YOUR_IP"
     print(f"\n{'='*50}")
     print(f"Charity Backend Server")
     print(f"{'='*50}")
