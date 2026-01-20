@@ -15,7 +15,7 @@ def create_app(config_class=Config):
         pass
 
     # Ensure upload folders exist
-    upload_base = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
+    upload_base = app.config.get('UPLOAD_FOLDER', os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads'))
     for folder in ['screenshots', 'investigations', 'payment_proofs']:
         os.makedirs(os.path.join(upload_base, folder), exist_ok=True)
 
