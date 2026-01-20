@@ -1,0 +1,41 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Database
+*.db
+*.sqlite3
+instance/
+
+# Environment
+.env
+.env.local
+
+# Uploads (keep folder structure)
+uploads/screenshots/*
+uploads/investigations/*
+uploads/payment_proofs/*
+!uploads/screenshots/.gitkeep
+!uploads/investigations/.gitkeep
+!uploads/payment_proofs/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
