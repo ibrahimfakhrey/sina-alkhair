@@ -14,7 +14,7 @@ bp = Blueprint('dashboard', __name__, url_prefix='/api/dashboard')
 
 @bp.route('/statistics', methods=['GET'])
 @jwt_required()
-@role_required(UserRole.OWNER)
+@role_required(UserRole.OWNER, UserRole.MANAGER_1, UserRole.MANAGER_2)
 def get_statistics():
     """Get full dashboard statistics"""
     # Total cases
@@ -92,7 +92,7 @@ def get_statistics():
 
 @bp.route('/cases-summary', methods=['GET'])
 @jwt_required()
-@role_required(UserRole.OWNER)
+@role_required(UserRole.OWNER, UserRole.MANAGER_1, UserRole.MANAGER_2)
 def get_cases_summary():
     """Get cases summary by status"""
     summary = []
@@ -110,7 +110,7 @@ def get_cases_summary():
 
 @bp.route('/monthly-spending', methods=['GET'])
 @jwt_required()
-@role_required(UserRole.OWNER)
+@role_required(UserRole.OWNER, UserRole.MANAGER_1, UserRole.MANAGER_2)
 def get_monthly_spending():
     """Get money spent per month (last 12 months)"""
     current_year = datetime.now().year
@@ -154,7 +154,7 @@ def get_monthly_spending():
 
 @bp.route('/researchers-performance', methods=['GET'])
 @jwt_required()
-@role_required(UserRole.OWNER)
+@role_required(UserRole.OWNER, UserRole.MANAGER_1, UserRole.MANAGER_2)
 def get_researchers_performance():
     """Get researcher performance statistics"""
     researchers = User.query.filter_by(role=UserRole.RESEARCHER, is_active=True).all()
@@ -194,7 +194,7 @@ def get_researchers_performance():
 
 @bp.route('/recent-activity', methods=['GET'])
 @jwt_required()
-@role_required(UserRole.OWNER)
+@role_required(UserRole.OWNER, UserRole.MANAGER_1, UserRole.MANAGER_2)
 def get_recent_activity():
     """Get recent case activity"""
     from ..models.audit_log import AuditLog
