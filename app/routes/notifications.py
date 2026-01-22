@@ -27,7 +27,14 @@ def register_fcm_token():
     if platform not in ['ios', 'android']:
         platform = 'android'
 
-    # Update user's FCM token
+    # IMPORTANT: Clear this FCM token from any other users first
+    # This ensures one device token is only associated with one user
+    User.query.filter(
+        User.fcm_token == fcm_token,
+        User.id != current_user.id
+    ).update({'fcm_token': None, 'fcm_platform': None})
+
+    # Update current user's FCM token
     current_user.fcm_token = fcm_token
     current_user.fcm_platform = platform
     db.session.commit()

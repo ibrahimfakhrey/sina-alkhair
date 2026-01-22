@@ -7,6 +7,7 @@ from ..extensions import db
 from ..models.user import User
 from ..utils.constants import UserRole
 from ..utils.validators import validate_password
+from ..utils.decorators import get_current_user as get_user
 
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -50,9 +51,17 @@ def login():
 @bp.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
-    """Logout - revoke current token"""
+    """Logout - revoke current token and clear FCM token"""
     jti = get_jwt()['jti']
     revoked_tokens.add(jti)
+
+    # Clear FCM token on logout
+    current_user = get_user()
+    if current_user:
+        current_user.fcm_token = None
+        current_user.fcm_platform = None
+        db.session.commit()
+
     return jsonify({'message': 'Successfully logged out'}), 200
 
 
